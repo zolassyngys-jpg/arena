@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Арена испытаний</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171a;
+    --panel:#1c2024;
+    --panel-2:#22262b;
+    --panel-3:#282d33;
+    --line:#2c3238;
+    --amber:#e8a33d;
+    --amber-dim:#a8792f;
+    --steel:#5b8aa6;
+    --text:#eceeef;
+    --muted:#8b939b;
+    --danger:#c0564f;
+    --good:#5f9e6f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:28px 20px 60px;}
+
+  .masthead{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom:2px solid var(--amber);
+    padding-bottom:16px;
+    margin-bottom:22px;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .masthead h1{
+    font-family:'Oswald',sans-serif;
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    margin:0;
+  }
+  .masthead p{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:24px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:5px;
+  }
+  nav.tabs button{
+    position:relative;
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 8px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  nav.tabs button.active{
+    background:var(--amber);
+    color:#1a1408;
+  }
+  nav.tabs button:not(.active):hover{
+    color:var(--text);
+    background:var(--panel-2);
+  }
+  .tab-badge{
+    display:inline-block;
+    min-width:16px;
+    padding:0 4px;
+    height:16px;
+    line-height:16px;
+    border-radius:8px;
+    background:var(--danger);
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    margin-left:5px;
+    vertical-align:2px;
+  }
+
+  #secret-admin-dot{
+    position:fixed;
+    right:14px;
+    bottom:14px;
+    width:9px;
+    height:9px;
+    padding:0;
+    border:none;
+    border-radius:50%;
+    background:var(--line);
+    opacity:.35;
+    cursor:pointer;
+    transition:opacity .15s ease, transform .15s ease;
+    z-index:10;
+  }
+  #secret-admin-dot:hover{opacity:.9;transform:scale(1.3);}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:18px;
+  }
+  .card h2{
+    font-family:'Oswald',sans-serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .card .hint{color:var(--muted);font-size:13px;margin:0 0 18px;}
+
+  label{
+    display:block;
+    font-size:13px;
+    color:var(--muted);
+    margin:14px 0 6px;
+  }
+  label:first-of-type{margin-top:0;}
+  input[type=text],input[type=number],input[type=url],input[type=password],select,textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:8px;
+    padding:11px 12px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:2px solid var(--amber-dim);
+    outline-offset:0;
+    border-color:var(--amber-dim);
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  /* category picker */
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+    gap:8px;
+  }
+  .cat-opt{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    background:var(--panel-2);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:14px 8px;
+    cursor:pointer;
+    text-align:center;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .cat-opt svg{width:26px;height:26px;stroke:var(--muted);transition:stroke .15s ease;}
+  .cat-opt span{font-size:12px;color:var(--muted);font-weight:600;}
+  .cat-opt.selected{border-color:var(--amber);background:rgba(232,163,61,.08);}
+  .cat-opt.selected svg{stroke:var(--amber);}
+  .cat-opt.selected span{color:var(--amber);}
+
+  .points-preview{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--panel-2);
+    border:1px dashed var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-top:14px;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .points-preview b{color:var(--amber);font-family:'Oswald',sans-serif;font-size:15px;}
+
+  /* photo attach */
+  .photo-attach-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    background:var(--panel-2);
+    border:1.5px dashed var(--line);
+    color:var(--muted);
+    border-radius:8px;
+    padding:14px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .photo-attach-btn:hover{border-color:var(--amber-dim);color:var(--text);}
+  .photo-attach-btn svg{width:18px;height:18px;}
+  .photo-preview{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:10px;
+  }
+  .photo-preview img{
+    width:72px;height:72px;object-fit:cover;
+    border-radius:8px;border:1px solid var(--line);
+  }
+  .photo-preview .photo-remove{
+    font-size:12px;color:var(--danger);
+    background:none;border:none;cursor:pointer;padding:0;
+    text-decoration:underline;
+  }
+
+  .admin-photo{margin:8px 0;}
+  .admin-photo img{
+    width:100px;height:100px;object-fit:cover;
+    border-radius:8px;border:1px solid var(--line);
+    cursor:zoom-in;transition:width .15s ease, height .15s ease;
+  }
+  .admin-photo img.expanded{
+    width:100%;height:auto;max-height:420px;cursor:zoom-out;
+    object-fit:contain;background:#000;
+  }
+  .mine-photo img{
+    width:44px;height:44px;object-fit:cover;
+    border-radius:6px;border:1px solid var(--line);
+    margin-right:8px;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--amber);
+    color:#1a1408;
+    border:none;
+    font-weight:700;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:11px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:18px;
+  }
+  .btn:hover{background:#f2af49;}
+  .btn.secondary{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text);
+  }
+  .btn.secondary:hover{border-color:var(--muted);}
+  .btn.danger{background:var(--danger);color:#fff;}
+  .btn.danger:hover{background:#d0655d;}
+  .btn.small{padding:8px 12px;font-size:13px;margin-top:0;}
+  .btn:disabled{opacity:.5;cursor:default;}
+
+  .msg{
+    font-size:13px;
+    padding:10px 12px;
+    border-radius:8px;
+    margin-top:14px;
+  }
+  .msg.ok{background:rgba(95,158,111,.15);color:var(--good);border:1px solid rgba(95,158,111,.35);}
+  .msg.err{background:rgba(192,86,79,.15);color:#e0918c;border:1px solid rgba(192,86,79,.35);}
+
+  /* leaderboard */
+  table{width:100%;border-collapse:collapse;}
+  th{
+    text-align:left;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+    padding:0 10px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  td{
+    padding:12px 10px;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+    vertical-align:middle;
+  }
+  tr:last-child td{border-bottom:none;}
+  .pos{color:var(--muted);width:28px;font-family:'Oswald',sans-serif;}
+  .player-cell{display:flex;align-items:center;gap:10px;}
+  .player-name{font-weight:600;}
+  .rank-name{font-size:12px;color:var(--muted);}
+  .points-cell{text-align:right;font-family:'Oswald',sans-serif;font-weight:600;color:var(--amber);}
+
+  .empty{
+    color:var(--muted);
+    font-size:14px;
+    text-align:center;
+    padding:30px 10px;
+  }
+
+  .chev-badge{flex:none;width:34px;height:34px;}
+
+  /* status pills for "my submissions" */
+  .status-pill{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .status-pill.pending{background:rgba(139,147,155,.2);color:var(--muted);}
+  .status-pill.approved{background:rgba(95,158,111,.2);color:var(--good);}
+  .status-pill.rejected{background:rgba(192,86,79,.2);color:#e0918c;}
+
+  .mine-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .mine-row:last-child{border-bottom:none;}
+  .mine-row .mine-desc{color:var(--muted);}
+
+  /* submission list (admin) */
+  .sub-item{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:12px;
+    background:var(--panel-2);
+  }
+  .sub-top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .sub-name{font-weight:700;}
+  .sub-cat{
+    font-size:11px;
+    color:var(--steel);
+    border:1px solid var(--steel);
+    border-radius:5px;
+    padding:2px 7px;
+    align-self:flex-start;
+  }
+  .sub-details{color:var(--text);font-size:14px;margin:6px 0;}
+  .sub-video a{color:var(--amber);font-size:13px;word-break:break-all;}
+  .sub-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+  .sub-actions input{width:100px;}
+
+  .lock-screen{max-width:340px;margin:60px auto;text-align:center;}
+  .lock-screen input{text-align:center;}
+
+  .admin-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+  }
+  .admin-bar span{color:var(--good);font-size:13px;font-weight:600;}
+
+  .search-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .search-row input{flex:1;}
+
+  .loading{color:var(--muted);font-size:14px;padding:14px 0;}
+
+  @media(max-width:520px){
+    .masthead h1{font-size:24px;}
+    .sub-actions{align-items:stretch;}
+    .sub-actions input{width:auto;flex:1;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <h1>Арена испытаний</h1>
+      <p>Отжался, подтянулся, покорил вершину, пробежал марафон — пришли видео, получи баллы и ранг.</p>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button data-tab="submit" class="active">Отправить</button>
+    <button data-tab="board">Рейтинг</button>
+  </nav>
+
+  <div id="tab-submit"></div>
+  <div id="tab-board" style="display:none"></div>
+  <div id="tab-admin" style="display:none"></div>
+
+</div>
+
+<button id="secret-admin-dot" aria-label="admin"></button>
+
+<script>
+const ADMIN_PASSWORD = "shyngys";
+const STORAGE_KEY = "arena_records";
+
+const ICONS = {
+  pushups: '<path d="M4 17l5-5 3 3 8-8" /><path d="M15 6h5v5" />',
+  pullups: '<path d="M6 4v3M18 4v3" /><path d="M6 7h12" /><path d="M9 7l3 13 3-13" />',
+  peak:    '<path d="M3 19l7-11 4 6 2-3 5 8z" />',
+  marathon:'<circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" />',
+  other:   '<path d="M12 3l2.6 5.9L21 10l-4.7 4.1L17.5 21 12 17.6 6.5 21l1.2-6.9L3 10l6.4-1.1z" />',
+};
+
+const CATEGORIES = [
+  {id:"pushups",  label:"Отжимания",          unit:"повторений", suggest:(n)=>Math.round(n*1)},
+  {id:"pullups",  label:"Подтягивания",        unit:"повторений", suggest:(n)=>Math.round(n*3)},
+  {id:"peak",     label:"Вершина",             unit:null,         suggest:()=>150},
+  {id:"marathon", label:"Марафон / забег",     unit:null,         suggest:()=>200},
+  {id:"other",    label:"Другое",              unit:null,         suggest:()=>50},
+];
+
+const RANKS = [
+  {min:0,    name:"Новобранец",       color:"#8b939b", chevrons:1},
+  {min:100,  name:"Боец",             color:"#7fa0b3", chevrons:1},
+  {min:250,  name:"Сержант",          color:"#5b8aa6", chevrons:2},
+  {min:500,  name:"Штурмовик",        color:"#6f9e63", chevrons:2},
+  {min:900,  name:"Ветеран",          color:"#5f9e6f", chevrons:3},
+  {min:1400, name:"Элита",            color:"#c9973f", chevrons:3},
+  {min:2000, name:"Чемпион",          color:"#e8a33d", chevrons:4},
+  {min:3000, name:"Мастер",           color:"#e0803d", chevrons:4},
+  {min:4500, name:"Легенда",          color:"#c0564f", chevrons:5},
+  {min:6500, name:"Глобальная элита", color:"#d64545", chevrons:6},
+];
+
+function getRank(points){
+  let r = RANKS[0];
+  for(const cand of RANKS){ if(points >= cand.min) r = cand; }
+  return r;
+}
+
+function chevronSvg(rank, size){
+  size = size || 34;
+  const n = rank.chevrons;
+  const color = rank.color;
+  let shapes = "";
+  for(let i=0;i<n;i++){
+    const y = 6 + i*6;
+    shapes += `<path d="M6 ${y+8} L17 ${y} L28 ${y+8}" stroke="${color}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  return `<svg class="chev-badge" width="${size}" height="${size}" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">${shapes}</svg>`;
+}
+
+function catIcon(id){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[id]}</svg>`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+// resize + compress a photo to a small JPEG data URL so it fits in shared storage
+function compressImage(file, maxSide, quality){
+  maxSide = maxSide || 700;
+  quality = quality || 0.6;
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("read failed"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("image decode failed"));
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > height && width > maxSide){
+          height = Math.round(height * (maxSide/width));
+          width = maxSide;
+        } else if(height > maxSide){
+          width = Math.round(width * (maxSide/height));
+          height = maxSide;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    if(res && res.value){
+      return JSON.parse(res.value);
+    }
+  }catch(e){}
+  return { records: [] };
+}
+
+async function saveData(data){
+  await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
+}
+
+let DATA = { records: [] };
+let adminAuthed = false;
+let selectedCat = CATEGORIES[0].id;
+// ids of records submitted from this browser tab this session, so the person can see their own status
+let mySubmissionIds = [];
+let pendingPhoto = null; // compressed data URL of the currently attached photo, if any
+
+const tabButtons = document.querySelectorAll("nav.tabs button");
+const panels = {
+  submit: document.getElementById("tab-submit"),
+  board: document.getElementById("tab-board"),
+  admin: document.getElementById("tab-admin"),
+};
+
+tabButtons.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    tabButtons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    Object.keys(panels).forEach(k=>panels[k].style.display = "none");
+    panels[btn.dataset.tab].style.display = "block";
+    if(btn.dataset.tab === "submit") renderSubmit();
+    if(btn.dataset.tab === "board") renderBoard();
+    if(btn.dataset.tab === "admin") renderAdmin();
+  });
+});
+
+async function refreshAdminBadge(){
+  const data = await loadData();
+  const count = data.records.filter(r=>r.status==="pending").length;
+  const dot = document.getElementById("secret-admin-dot");
+  if(dot){
+    dot.style.background = count > 0 ? "var(--amber)" : "var(--line)";
+    dot.style.opacity = count > 0 ? "0.8" : "0.35";
+  }
+}
+
+function renderSubmit(){
+  const myRecords = DATA.records.filter(r=>mySubmissionIds.includes(r.id)).sort((a,b)=>b.createdAt-a.createdAt);
+  const myHtml = myRecords.length === 0 ? "" : `
+    <div class="card">
+      <h2>Ваши заявки в этой сессии</h2>
+      ${myRecords.map(r=>`
+        <div class="mine-row">
+          <div style="display:flex;align-items:center">
+            ${r.photo ? `<span class="mine-photo"><img src="${r.photo}" alt=""></span>` : ""}
+            <div>${escapeHtml(r.categoryLabel)} — <span class="mine-desc">${escapeHtml(r.description)}</span></div>
+          </div>
+          <span class="status-pill ${r.status}">${r.status==="pending"?"на проверке":r.status==="approved"?`+${r.points}`:"отклонено"}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  panels.submit.innerHTML = `
+    <div class="card">
+      <h2>Заявить достижение</h2>
+      <p class="hint">Выбери категорию, заполни детали и прикрепи видео-доказательство. Баллы начислят после проверки админом.</p>
+
+      <label>Категория</label>
+      <div class="cat-grid" id="cat-grid">
+        ${CATEGORIES.map(c=>`
+          <div class="cat-opt ${c.id===selectedCat?'selected':''}" data-cat="${c.id}">
+            ${catIcon(c.id)}
+            <span>${c.label}</span>
+          </div>
+        `).join("")}
+      </div>
+
+      <label for="f-name">Имя / никнейм</label>
+      <input type="text" id="f-name" placeholder="Как тебя записать в рейтинге">
+
+      <div id="f-count-wrap">
+        <label for="f-count">Количество повторений</label>
+        <input type="number" id="f-count" min="0" placeholder="Например, 40">
+      </div>
+
+      <div id="f-details-wrap" style="display:none">
+        <label for="f-details">Детали</label>
+        <textarea id="f-details" placeholder="Название вершины и высота, либо дистанция и время забега"></textarea>
+      </div>
+
+      <label for="f-video">Ссылка на видео</label>
+      <input type="url" id="f-video" placeholder="https://...">
+
+      <label>Фото — доп. доказательство (по желанию)</label>
+      <input type="file" accept="image/*" capture="environment" id="f-photo" style="display:none">
+      <button type="button" class="photo-attach-btn" id="f-photo-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Выбрать фото или снять камерой
+      </button>
+      <div class="photo-preview" id="f-photo-preview" style="display:none"></div>
+
+      <div class="points-preview" id="f-preview"></div>
+
+      <button class="btn" id="f-submit">Отправить на проверку</button>
+      <div id="f-msg"></div>
+    </div>
+    ${myHtml}
+  `;
+
+  const countInput = document.getElementById("f-count");
+  const preview = document.getElementById("f-preview");
+
+  function syncFields(){
+    const c = CATEGORIES.find(x=>x.id===selectedCat);
+    document.getElementById("f-count-wrap").style.display = c.unit ? "block" : "none";
+    document.getElementById("f-details-wrap").style.display = c.unit ? "none" : "block";
+    updatePreview();
+  }
+
+  function updatePreview(){
+    const c = CATEGORIES.find(x=>x.id===selectedCat);
+    const n = Number(countInput.value) || 0;
+    const suggested = c.unit ? c.suggest(n) : c.suggest();
+    preview.innerHTML = `Ориентировочно <b>${suggested}</b> баллов — точное число подтвердит админ после просмотра видео.`;
+  }
+
+  document.querySelectorAll(".cat-opt").forEach(opt=>{
+    opt.addEventListener("click", ()=>{
+      selectedCat = opt.dataset.cat;
+      document.querySelectorAll(".cat-opt").forEach(o=>o.classList.remove("selected"));
+      opt.classList.add("selected");
+      syncFields();
+    });
+  });
+  countInput.addEventListener("input", updatePreview);
+  syncFields();
+
+  const photoInput = document.getElementById("f-photo");
+  const photoBtn = document.getElementById("f-photo-btn");
+  const photoPreview = document.getElementById("f-photo-preview");
+
+  function renderPhotoPreview(){
+    if(pendingPhoto){
+      photoPreview.style.display = "flex";
+      photoPreview.innerHTML = `<img src="${pendingPhoto}" alt=""><button type="button" class="photo-remove" id="f-photo-remove">Убрать фото</button>`;
+      document.getElementById("f-photo-remove").addEventListener("click", ()=>{
+        pendingPhoto = null;
+        photoInput.value = "";
+        renderPhotoPreview();
+      });
+    } else {
+      photoPreview.style.display = "none";
+      photoPreview.innerHTML = "";
+    }
+  }
+  renderPhotoPreview();
+
+  photoBtn.addEventListener("click", ()=> photoInput.click());
+  photoInput.addEventListener("change", async ()=>{
+    const file = photoInput.files[0];
+    if(!file) return;
+    photoBtn.textContent = "Обрабатываю фото…";
+    try{
+      pendingPhoto = await compressImage(file);
+    }catch(e){
+      pendingPhoto = null;
+      document.getElementById("f-msg").innerHTML = `<div class="msg err">Не получилось обработать фото — попробуй другое.</div>`;
+    }
+    photoBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> Выбрать фото или снять камерой`;
+    renderPhotoPreview();
+  });
+
+  document.getElementById("f-submit").addEventListener("click", async ()=>{
+    const name = document.getElementById("f-name").value.trim();
+    const cat = CATEGORIES.find(c=>c.id===selectedCat);
+    const count = document.getElementById("f-count").value;
+    const details = document.getElementById("f-details").value.trim();
+    const video = document.getElementById("f-video").value.trim();
+    const msgEl = document.getElementById("f-msg");
+
+    if(!name || !video){
+      msgEl.innerHTML = `<div class="msg err">Укажи имя и ссылку на видео.</div>`;
+      return;
+    }
+    if(cat.unit && !count){
+      msgEl.innerHTML = `<div class="msg err">Укажи количество повторений.</div>`;
+      return;
+    }
+    if(!cat.unit && !details){
+      msgEl.innerHTML = `<div class="msg err">Опиши достижение (вершина, дистанция, время).</div>`;
+      return;
+    }
+
+    const submitBtn = document.getElementById("f-submit");
+    submitBtn.disabled = true;
+
+    const description = cat.unit ? `${count} ${cat.unit}` : details;
+    const suggestedPoints = cat.unit ? cat.suggest(Number(count)) : cat.suggest();
+
+    const record = {
+      id: uid(),
+      name,
+      category: cat.id,
+      categoryLabel: cat.label,
+      description,
+      video,
+      photo: pendingPhoto || null,
+      suggestedPoints,
+      points: 0,
+      status: "pending",
+      createdAt: Date.now(),
+    };
+
+    try{
+      DATA = await loadData();
+      DATA.records.push(record);
+      await saveData(DATA);
+      mySubmissionIds.push(record.id);
+      refreshAdminBadge();
+      pendingPhoto = null;
+      msgEl.innerHTML = `<div class="msg ok">Заявка отправлена. Следи за статусом ниже.</div>`;
+      document.getElementById("f-count").value = "";
+      document.getElementById("f-details").value = "";
+      document.getElementById("f-video").value = "";
+      renderSubmit();
+    }catch(e){
+      msgEl.innerHTML = `<div class="msg err">Не получилось отправить — возможно, фото слишком тяжёлое. Попробуй без фото или с другим снимком.</div>`;
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+async function renderBoard(){
+  panels.board.innerHTML = `<div class="card"><h2>Рейтинг</h2><div class="loading">Загрузка…</div></div>`;
+  DATA = await loadData();
+
+  const totals = {};
+  for(const r of DATA.records){
+    if(r.status === "approved"){
+      totals[r.name] = (totals[r.name] || 0) + r.points;
+    }
+  }
+  const rows = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+
+  if(rows.length === 0){
+    panels.board.innerHTML = `
+      <div class="card">
+        <h2>Рейтинг</h2>
+        <p class="hint">Здесь появятся игроки после первых одобренных заявок.</p>
+        <div class="empty">Пока пусто — заяви первое достижение.</div>
+      </div>`;
+    return;
+  }
+
+  const bodyRows = rows.map((row, i)=>{
+    const [name, points] = row;
+    const rank = getRank(points);
+    return `
+      <tr>
+        <td class="pos">${i+1}</td>
+        <td>
+          <div class="player-cell">
+            ${chevronSvg(rank)}
+            <div>
+              <div class="player-name">${escapeHtml(name)}</div>
+              <div class="rank-name">${rank.name}</div>
+            </div>
+          </div>
+        </td>
+        <td class="points-cell">${points}</td>
+      </tr>
+    `;
+  }).join("");
+
+  panels.board.innerHTML = `
+    <div class="card">
+      <h2>Рейтинг</h2>
+      <p class="hint">Баллы начисляются за одобренные заявки. Ранг растёт вместе с суммой баллов.</p>
+      <table>
+        <thead><tr><th></th><th>Игрок</th><th style="text-align:right">Баллы</th></tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminLock(){
+  panels.admin.innerHTML = `
+    <div class="card lock-screen">
+      <h2>Вход в админ-режим</h2>
+      <p class="hint">Введи пароль, чтобы проверять заявки и начислять баллы.</p>
+      <input type="password" id="admin-pass" placeholder="Пароль" autocomplete="off">
+      <button class="btn" id="admin-login">Войти</button>
+      <div id="admin-login-msg"></div>
+    </div>
+  `;
+  const input = document.getElementById("admin-pass");
+  const msg = document.getElementById("admin-login-msg");
+  function tryLogin(){
+    if(input.value === ADMIN_PASSWORD){
+      adminAuthed = true;
+      renderAdmin();
+    } else {
+      msg.innerHTML = `<div class="msg err">Неверный пароль.</div>`;
+    }
+  }
+  document.getElementById("admin-login").addEventListener("click", tryLogin);
+  input.addEventListener("keydown", e=>{ if(e.key === "Enter") tryLogin(); });
+  input.focus();
+}
+
+let adminSearch = "";
+
+async function renderAdmin(){
+  if(!adminAuthed){
+    renderAdminLock();
+    return;
+  }
+
+  panels.admin.innerHTML = `<div class="card"><div class="loading">Загрузка заявок…</div></div>`;
+  DATA = await loadData();
+  refreshAdminBadge();
+
+  let pending = DATA.records.filter(r=>r.status === "pending").sort((a,b)=>a.createdAt-b.createdAt);
+  if(adminSearch.trim()){
+    const q = adminSearch.trim().toLowerCase();
+    pending = pending.filter(r=>r.name.toLowerCase().includes(q) || r.categoryLabel.toLowerCase().includes(q));
+  }
+
+  const pendingHtml = pending.length === 0
+    ? `<div class="empty">${adminSearch.trim() ? "Ничего не найдено." : "Новых заявок нет."}</div>`
+    : pending.map(r=>`
+      <div class="sub-item" data-id="${r.id}">
+        <div class="sub-top">
+          <div><span class="sub-name">${escapeHtml(r.name)}</span></div>
+          <span class="sub-cat">${escapeHtml(r.categoryLabel)}</span>
+        </div>
+        <div class="sub-details">${escapeHtml(r.description)}</div>
+        ${r.photo ? `<div class="admin-photo"><img src="${r.photo}" alt="" onclick="this.classList.toggle('expanded')"></div>` : ""}
+        <div class="sub-video"><a href="${escapeHtml(r.video)}" target="_blank" rel="noopener">${escapeHtml(r.video)}</a></div>
+        <div class="sub-actions">
+          <input type="number" min="0" class="award-points" value="${r.suggestedPoints}">
+          <button class="btn small approve-btn">Одобрить</button>
+          <button class="btn small secondary reject-btn">Отклонить</button>
+        </div>
+      </div>
+    `).join("");
+
+  const totals = {};
+  for(const r of DATA.records){
+    if(r.status === "approved") totals[r.name] = (totals[r.name] || 0) + r.points;
+  }
+  const players = Object.keys(totals).sort((a,b)=>totals[b]-totals[a]);
+  const playersHtml = players.length === 0
+    ? `<div class="empty">Игроков пока нет.</div>`
+    : players.map(name=>{
+        const rank = getRank(totals[name]);
+        return `
+          <div class="sub-item" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div class="player-cell">
+              ${chevronSvg(rank, 28)}
+              <div>
+                <div class="player-name">${escapeHtml(name)}</div>
+                <div class="rank-name">${rank.name} · ${totals[name]} баллов</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+  panels.admin.innerHTML = `
+    <div class="admin-bar">
+      <span>Админ-режим активен</span>
+      <button class="btn secondary small" id="admin-logout">Выйти</button>
+    </div>
+
+    <div class="card">
+      <h2>Заявки на проверке ${pending.length ? `<span class="tab-badge" style="vertical-align:2px">${pending.length}</span>` : ""}</h2>
+      <p class="hint">Открой видео, проверь и назначь баллы. Число баллов можно менять перед одобрением.</p>
+      <div class="search-row">
+        <input type="text" id="admin-search" placeholder="Поиск по имени или категории" value="${escapeHtml(adminSearch)}">
+      </div>
+      ${pendingHtml}
+    </div>
+
+    <div class="card">
+      <h2>Начислить бонусные баллы</h2>
+      <p class="hint">Например, за отдельное усилие без отдельной заявки — очки уйдут в общий рейтинг сразу.</p>
+      <label for="bonus-name">Имя игрока</label>
+      <input type="text" id="bonus-name" placeholder="Как записан в рейтинге">
+      <label for="bonus-points">Баллы</label>
+      <input type="number" id="bonus-points" placeholder="Например, 100">
+      <button class="btn" id="bonus-submit">Начислить</button>
+      <div id="bonus-msg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Игроки и ранги</h2>
+      ${playersHtml}
+    </div>
+  `;
+
+  document.getElementById("admin-search").addEventListener("input", e=>{
+    adminSearch = e.target.value;
+    renderAdmin();
+  });
+  const searchInput = document.getElementById("admin-search");
+  searchInput.focus();
+  searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+
+  document.getElementById("admin-logout").addEventListener("click", ()=>{
+    adminAuthed = false;
+    renderAdmin();
+  });
+
+  panels.admin.querySelectorAll(".sub-item[data-id]").forEach(item=>{
+    const id = item.dataset.id;
+    const approveBtn = item.querySelector(".approve-btn");
+    const rejectBtn = item.querySelector(".reject-btn");
+    const pointsInput = item.querySelector(".award-points");
+
+    approveBtn.addEventListener("click", async ()=>{
+      approveBtn.disabled = true;
+      rejectBtn.disabled = true;
+      DATA = await loadData();
+      const rec = DATA.records.find(r=>r.id === id);
+      if(rec){
+        rec.status = "approved";
+        rec.points = Number(pointsInput.value) || 0;
+        await saveData(DATA);
+      }
+      renderAdmin();
+    });
+
+    rejectBtn.addEventListener("click", async ()=>{
+      approveBtn.disabled = true;
+      rejectBtn.disabled = true;
+      DATA = await loadData();
+      const rec = DATA.records.find(r=>r.id === id);
+      if(rec) rec.status = "rejected";
+      await saveData(DATA);
+      renderAdmin();
+    });
+  });
+
+  document.getElementById("bonus-submit").addEventListener("click", async ()=>{
+    const name = document.getElementById("bonus-name").value.trim();
+    const points = Number(document.getElementById("bonus-points").value);
+    const msgEl = document.getElementById("bonus-msg");
+    if(!name || !points){
+      msgEl.innerHTML = `<div class="msg err">Укажи имя и число баллов.</div>`;
+      return;
+    }
+    DATA = await loadData();
+    DATA.records.push({
+      id: uid(),
+      name,
+      category: "bonus",
+      categoryLabel: "Бонус",
+      description: "Начислено администратором",
+      video: "",
+      suggestedPoints: points,
+      points,
+      status: "approved",
+      createdAt: Date.now(),
+    });
+    await saveData(DATA);
+    renderAdmin();
+  });
+}
+
+renderSubmit();
+refreshAdminBadge();
+
+document.getElementById("secret-admin-dot").addEventListener("click", ()=>{
+  tabButtons.forEach(b=>b.classList.remove("active"));
+  Object.keys(panels).forEach(k=>panels[k].style.display = "none");
+  panels.admin.style.display = "block";
+  renderAdmin();
+});
+</script>
+</body>
+</html>
