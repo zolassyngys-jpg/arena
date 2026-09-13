@@ -156,7 +156,6 @@
   }
   textarea{resize:vertical;min-height:70px;}
 
-  /* category picker */
   .cat-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
@@ -195,7 +194,6 @@
   }
   .points-preview b{color:var(--amber);font-family:'Oswald',sans-serif;font-size:15px;}
 
-  /* photo attach */
   .photo-attach-btn{
     display:flex;
     align-items:center;
@@ -281,7 +279,6 @@
   .msg.ok{background:rgba(95,158,111,.15);color:var(--good);border:1px solid rgba(95,158,111,.35);}
   .msg.err{background:rgba(192,86,79,.15);color:#e0918c;border:1px solid rgba(192,86,79,.35);}
 
-  /* leaderboard */
   table{width:100%;border-collapse:collapse;}
   th{
     text-align:left;
@@ -313,7 +310,6 @@
 
   .chev-badge{flex:none;width:34px;height:34px;}
 
-  /* status pills for "my submissions" */
   .status-pill{
     display:inline-block;
     font-size:11px;
@@ -337,7 +333,6 @@
   .mine-row:last-child{border-bottom:none;}
   .mine-row .mine-desc{color:var(--muted);}
 
-  /* submission list (admin) */
   .sub-item{
     border:1px solid var(--line);
     border-radius:10px;
@@ -435,16 +430,16 @@ const ICONS = {
 };
 
 const CATEGORIES = [
-  {id:"pushups",  label:"Отжимания",          unit:"повторений", suggest:(n)=>Math.round(n*1)},
-  {id:"pullups",  label:"Подтягивания",        unit:"повторений", suggest:(n)=>Math.round(n*3)},
+  {id:"pushups",  label:"Отжимания",         unit:"повторений", suggest:(n)=>Math.round(n*1)},
+  {id:"pullups",  label:"Подтягивания",       unit:"повторений", suggest:(n)=>Math.round(n*3)},
   {id:"peak",     label:"Вершина",             unit:null,         suggest:()=>150},
   {id:"marathon", label:"Марафон / забег",     unit:null,         suggest:()=>200},
   {id:"other",    label:"Другое",              unit:null,         suggest:()=>50},
 ];
 
 const RANKS = [
-  {min:0,    name:"Новобранец",       color:"#8b939b", chevrons:1},
-  {min:100,  name:"Боец",             color:"#7fa0b3", chevrons:1},
+  {min:0,    name:"Новобранец",        color:"#8b939b", chevrons:1},
+  {min:100,  name:"Боец",              color:"#7fa0b3", chevrons:1},
   {min:250,  name:"Сержант",          color:"#5b8aa6", chevrons:2},
   {min:500,  name:"Штурмовик",        color:"#6f9e63", chevrons:2},
   {min:900,  name:"Ветеран",          color:"#5f9e6f", chevrons:3},
@@ -485,7 +480,6 @@ function uid(){
   return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
 }
 
-// resize + compress a photo to a small JPEG data URL so it fits in shared storage
 function compressImage(file, maxSide, quality){
   maxSide = maxSide || 700;
   quality = quality || 0.6;
@@ -517,24 +511,25 @@ function compressImage(file, maxSide, quality){
 
 async function loadData(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, true);
-    if(res && res.value){
-      return JSON.parse(res.value);
+    const res = localStorage.getItem(STORAGE_KEY);
+    if(res){
+      return JSON.parse(res);
     }
   }catch(e){}
   return { records: [] };
 }
 
 async function saveData(data){
-  await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){}
 }
 
 let DATA = { records: [] };
 let adminAuthed = false;
 let selectedCat = CATEGORIES[0].id;
-// ids of records submitted from this browser tab this session, so the person can see their own status
 let mySubmissionIds = [];
-let pendingPhoto = null; // compressed data URL of the currently attached photo, if any
+let pendingPhoto = null;
 
 const tabButtons = document.querySelectorAll("nav.tabs button");
 const panels = {
